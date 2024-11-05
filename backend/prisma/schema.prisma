@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.db"
+}
+
+model UserInput {
+  id        Int                @id @default(autoincrement())
+  email     String
+  keywords  String
+  audience  String
+  language  String
+  tone      String
+  generated Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  outputs   GeneratedContent[]
+
+  @@map("user_input")
+}
+
+model GeneratedContent {
+  id             Int      @id @default(autoincrement())
+  trendingTopics String
+  viralTopic     String
+  blogDraft      String
+  socialDraft    String
+  personalized   String
+  seoOptimized   String
+  userInputId    Int
+  createdAt      DateTime @default(now())
+
+  userInput UserInput @relation(fields: [userInputId], references: [id])
+}
