@@ -4,6 +4,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,6 +32,7 @@ import {
 } from "@/components/ui/multi-select";
 import { TagsInput } from "@/components/ui/tags-input";
 import { audienceTypes, languageTypes, toneTypes } from "@/lib/constants";
+import fetcher from "@/lib/fetcher";
 
 const formSchema = z.object({
   email: z
@@ -36,7 +45,7 @@ const formSchema = z.object({
   audience: z
     .array(z.string())
     .nonempty("Please select at least one audience segment."),
-  language: z.array(z.string()).nonempty("Please select at least one language."),
+  language: z.string().nonempty("Please select at least one language."),
   tone: z
     .array(z.string())
     .nonempty("Please select at least one tone for the content."),
@@ -48,17 +57,26 @@ export default function StagOneForm() {
     defaultValues: {
       keywords: [],
       audience: [],
-      lang: [],
+      language: "",
       tone: [],
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       console.log(values);
-    
-    } catch (error) {
-      console.error("Form submission error", error);
+
+      const response = await fetcher.post(
+        "http://localhost:4000/content/generate",
+        {
+          body: values,
+        }
+      );
+
+      console.log({ response });
+
+      toast.success("Your inputs are processed successfully");
+    } catch {
       toast.error("Failed to submit the form. Please try again.");
     }
   }
@@ -130,7 +148,11 @@ export default function StagOneForm() {
                   </MultiSelectorTrigger>
                   <MultiSelectorContent>
                     <MultiSelectorList>
-                      {audienceTypes.map((each, key) =>  <MultiSelectorItem key={key} value={each}>{each}</MultiSelectorItem>)}
+                      {audienceTypes.map((each, key) => (
+                        <MultiSelectorItem key={key} value={each}>
+                          {each}
+                        </MultiSelectorItem>
+                      ))}
                     </MultiSelectorList>
                   </MultiSelectorContent>
                 </MultiSelector>
@@ -150,27 +172,20 @@ export default function StagOneForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Language</FormLabel>
-              <FormControl>
-                <MultiSelector
-                  values={field.value}
-                  onValuesChange={field.onChange}
-                  loop
-                >
-                  <MultiSelectorTrigger>
-                    <MultiSelectorInput placeholder="Select languages" />
-                  </MultiSelectorTrigger>
-                  <MultiSelectorContent>
-                    <MultiSelectorList>
-                      
-                    {languageTypes.map((each, key) =>  <MultiSelectorItem key={key} value={each}>{each}</MultiSelectorItem>)}
-                    </MultiSelectorList>
-                  </MultiSelectorContent>
-                </MultiSelector>
-              </FormControl>
-              {/* <FormDescription>
-                Choose the language(s) in which you want the content to be
-                generated. You can select multiple languages.
-              </FormDescription> */}
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select languages" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {languageTypes.map((each, key) => (
+                    <SelectItem key={key} value={each}>
+                      {each}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -193,8 +208,11 @@ export default function StagOneForm() {
                   </MultiSelectorTrigger>
                   <MultiSelectorContent>
                     <MultiSelectorList>
-                      
-                    {toneTypes.map((each, key) =>  <MultiSelectorItem key={key} value={each}>{each}</MultiSelectorItem>)}
+                      {toneTypes.map((each, key) => (
+                        <MultiSelectorItem key={key} value={each}>
+                          {each}
+                        </MultiSelectorItem>
+                      ))}
                     </MultiSelectorList>
                   </MultiSelectorContent>
                 </MultiSelector>

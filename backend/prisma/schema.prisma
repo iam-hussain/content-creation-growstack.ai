@@ -20,7 +20,6 @@ model UserInput {
   audience  String
   language  String
   tone      String
-  generated Boolean            @default(false)
   createdAt DateTime           @default(now())
   outputs   GeneratedContent[]
 
@@ -28,15 +27,14 @@ model UserInput {
 }
 
 model GeneratedContent {
-  id             Int      @id @default(autoincrement())
-  trendingTopics String
-  viralTopic     String
-  blogDraft      String
-  socialDraft    String
-  personalized   String
-  seoOptimized   String
-  userInputId    Int
-  createdAt      DateTime @default(now())
-
-  userInput UserInput @relation(fields: [userInputId], references: [id])
+  id          Int       @id @default(autoincrement())
+  blog        String?
+  twitter     String?
+  facebook    String?
+  linkedin    String?
+  instagram   String?
+  threads     String?
+  userInputId Int
+  userInput   UserInput @relation(fields: [userInputId], references: [id])
+  createdAt   DateTime  @default(now())
 }

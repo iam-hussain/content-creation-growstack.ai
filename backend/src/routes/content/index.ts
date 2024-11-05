@@ -15,16 +15,21 @@ const contentRouter: Router = (() => {
     validateRequest(generateContent),
     asyncHandler(async (req, res) => {
       const { email, keywords, language, audience, tone } = req.body;
-
       try {
         // Store initial user input in the database
         const inputs = await database.userInput.create({
-          data: { email, keywords, audience, language, tone },
+          data: {
+            email,
+            keywords: keywords.join(','),
+            audience: audience.join(','),
+            language: language,
+            tone: tone.join(','),
+          },
         });
 
         aiEventEmitter.emit('generate-topics', { inputs });
-
         const response = new ServiceResponse(ResponseStatus.Success, 'User found', inputs, StatusCodes.OK);
+
         return responder(response, res);
       } catch (error) {
         console.error('Error initializing content generation:', error);

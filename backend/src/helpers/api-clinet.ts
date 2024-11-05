@@ -4,7 +4,7 @@ import env from '@/providers/env-config';
 
 const apiClient = axios.create({
   baseURL: 'https://api.openai.com/v1',
-  timeout: 10000,
+  timeout: 1000000,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${env.CHATGPT_API_KEY}`,

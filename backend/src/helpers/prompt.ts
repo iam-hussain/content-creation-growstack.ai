@@ -1,53 +1,51 @@
-import apiClient from "./api-clinet";
+import apiClient from './api-clinet';
 
 export const extractChoice = (response: any) => {
-    return response?.data?.choices[0]?.text?.trim() || ''
-}
+  return response?.data?.choices[0]?.message?.content?.trim() || '';
+};
 
-export const extractMultiChoice = (response: any) => {
-  return response?.data?.choices[0]?.text?.trim().split(",") || []
-}
+export const extractMultiChoices = (response: any) => {
+  return (
+    response?.data?.choices[0]?.message?.content?.split('\n').map((item: string) => {
+      return item.replace(/^\d+\.\s*/, '').trim();
+    }) || []
+  );
+};
 
-export function fetchTrendingTopics(keywords: string[]) {
-   const trendingPrompt = `Identify trending topics based on the following keywords: "${keywords.join(", ")}".`;
+export function fetchTrendingTopics(keywords: string) {
+  const trendingPrompt = `Identify trending topics based on the following keywords: "${keywords}". Return the topics list.`;
 
-   return apiClient.post("/completions", {
-    model: "text-davinci-003",
-    prompt: trendingPrompt,
+  return apiClient.post('/chat/completions', {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: trendingPrompt }],
     max_tokens: 100,
-  })
+  });
 }
 
-export function fetchPost(viralTopic: string, tone:string[], language: string[]) {
-  const blogPrompt = `Create a ${tone.join(", ")} social media post in ${language.join(", ")} on the topic "${viralTopic}".`;
-  const socialPrompt = `Create a ${tone.join(", ")} social media post in ${language.join(", ")} on the topic "${viralTopic}".`;
+export function fetchContentPost(viralTopic: string, tone: string, language: string, length: number = 500) {
+  const blogPrompt = `Write a ${tone} blog for the social media post in ${language} on the topic "${viralTopic}" with ${length} characters.`;
 
-  return [ apiClient.post("/completions", {
-    model: "text-davinci-003",
-    prompt: blogPrompt,
-    max_tokens: 100,
-  }),  apiClient.post("/completions", {
-    model: "text-davinci-003",
-    prompt: socialPrompt,
-    max_tokens: 100,
-  })]
+  return apiClient.post('/chat/completions', {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: blogPrompt }],
+    max_tokens: 700,
+  });
 }
 
-export async function personalizeContent(content: string, audience: string[]) {
-  const personalizePrompt = `Customize the following content for a ${audience.join(", ")} audience: "${content}"`;
-  return apiClient.post("/completions", {
-    model: "text-davinci-003",
-    prompt: personalizePrompt,
+export async function personalizeContent(content: string, audience: string[], length: number = 500) {
+  const personalizePrompt = `Customize the following content for a ${audience} audience: "${content}" with ${length} characters.`;
+  return apiClient.post('/chat/completions', {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: personalizePrompt }],
     max_tokens: 200,
   });
-
 }
 
-export async function seoOptimizeContent(content: string) {
-  const seoPrompt = `Proofread and SEO optimize the following content for keyword density and readability: "${content}"`;
-  return apiClient.post("https://api.openai.com/v1/completions", {
-    model: "text-davinci-003",
-    prompt: seoPrompt,
+export async function seoOptimizeContent(content: string, length: number = 500) {
+  const seoPrompt = `Proofread and SEO optimize the following content for keyword density and readability: "${content}" with ${length} characters.`;
+  return apiClient.post('/chat/completions', {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: seoPrompt }],
     max_tokens: 200,
   });
 }
