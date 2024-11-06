@@ -14,20 +14,20 @@ datasource db {
 }
 
 model UserInput {
-  id        Int                @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   email     String
   keywords  String
   audience  String
   language  String
   tone      String
-  createdAt DateTime           @default(now())
-  outputs   GeneratedContent[]
+  createdAt DateTime  @default(now())
+  outputs   Content[]
 
   @@map("user_input")
 }
 
-model GeneratedContent {
-  id          Int       @id @default(autoincrement())
+model Content {
+  id          Int        @id @default(autoincrement())
   blog        String?
   twitter     String?
   facebook    String?
@@ -35,6 +35,20 @@ model GeneratedContent {
   instagram   String?
   threads     String?
   userInputId Int
-  userInput   UserInput @relation(fields: [userInputId], references: [id])
-  createdAt   DateTime  @default(now())
+  userInput   UserInput  @relation(fields: [userInputId], references: [id])
+  createdAt   DateTime   @default(now())
+  Schedule    Schedule[]
+}
+
+model Schedule {
+  id        Int       @id @default(autoincrement())
+  blog      DateTime?
+  twitter   DateTime?
+  facebook  DateTime?
+  linkedin  DateTime?
+  instagram DateTime?
+  threads   DateTime?
+  contentId Int
+  content   Content   @relation(fields: [contentId], references: [id])
+  createdAt DateTime  @default(now())
 }
