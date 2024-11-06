@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
+import { ClientProvider } from "@/components/providers/client-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-paper">
       <body className="bg-paper">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ClientProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </ClientProvider>
       </body>
     </html>
   );

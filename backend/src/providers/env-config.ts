@@ -9,6 +9,7 @@ const env = cleanEnv(process.env, {
   PORT: port(),
   CORS_ORIGIN: str(),
   CHATGPT_API_KEY: str(),
+  CHATGPT_MODAL_NAME: str(),
 });
 
 export default env;

@@ -1,4 +1,8 @@
-import { ThemeProvider as NextThemesProvider, ThemeProviderProps } from "next-themes";
+import {
+  ThemeProvider as NextThemesProvider,
+  ThemeProviderProps,
+} from "next-themes";
+
 import { ThemeModeToggle } from "../molecules/theme-mode-toggle";
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
@@ -10,7 +14,9 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       disableTransitionOnChange
       {...props}
     >
-      <div className="absolute top-3 right-3"><ThemeModeToggle /></div>
+      <div className="absolute top-3 right-3">
+        <ThemeModeToggle />
+      </div>
       {children}
     </NextThemesProvider>
   );

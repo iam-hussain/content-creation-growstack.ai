@@ -1,5 +1,7 @@
 "use client";
+import { useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -32,7 +34,7 @@ import {
 } from "@/components/ui/multi-select";
 import { TagsInput } from "@/components/ui/tags-input";
 import { audienceTypes, languageTypes, toneTypes } from "@/lib/constants";
-import fetcher from "@/lib/fetcher";
+import { CreateUserInput } from "@/lib/query";
 
 const formSchema = z.object({
   email: z
@@ -52,6 +54,9 @@ const formSchema = z.object({
 });
 
 export default function StagOneForm() {
+  const router = useRouter();
+  const [mutateFunction, { loading }] = useMutation(CreateUserInput);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,22 +68,23 @@ export default function StagOneForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-
-      const response = await fetcher.post(
-        "http://localhost:4000/content/generate",
-        {
-          body: values,
-        }
-      );
-
-      console.log({ response });
-
-      toast.success("Your inputs are processed successfully");
-    } catch {
-      toast.error("Failed to submit the form. Please try again.");
-    }
+    mutateFunction({
+      variables: {
+        ...values,
+        keywords: values.keywords.join(","),
+        audience: values.audience.join(","),
+        tone: values.tone.join(","),
+      },
+    })
+      .then((response: any) => {
+        console.log({ response });
+        toast.success("Your inputs are processed successfully");
+        router.push(`/${response.id}`);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to submit the form. Please try again.");
+      });
   }
 
   return (
@@ -226,7 +232,7 @@ export default function StagOneForm() {
           )}
         />
         <div>
-          <Button type="submit" className="mt-4 w-full">
+          <Button type="submit" className="mt-4 w-full" disabled={loading}>
             Next
           </Button>
         </div>

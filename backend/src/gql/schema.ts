@@ -1,73 +1,11 @@
-import gql from 'graphql-tag';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
-export default gql`
-  type Query {
-    userInputs: [UserInput]
-    contentByUserInput(userInputId: Int!): [Content]
-  }
+import resolvers from './resolvers';
+import typeDefs from './typeDefs';
 
-  type Mutation {
-    createUserInput(email: String!, keywords: String!, audience: String!, language: String!, tone: String!): UserInput
-    updateContent(
-      id: Int!
-      blog: String
-      twitter: String
-      facebook: String
-      linkedin: String
-      instagram: String
-      threads: String
-    ): Content
-    createSchedule(
-      contentId: Int!
-      blog: String
-      twitter: String
-      facebook: String
-      linkedin: String
-      instagram: String
-      threads: String
-    ): Schedule
-  }
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
 
-  type Subscription {
-    contentGeneratedByAI: Content
-    scheduleTriggered: Schedule
-  }
-
-  type UserInput {
-    id: Int!
-    email: String!
-    keywords: String!
-    audience: String!
-    language: String!
-    tone: String!
-    createdAt: String!
-    outputs: [Content]!
-  }
-
-  type Content {
-    id: Int!
-    blog: String
-    twitter: String
-    facebook: String
-    linkedin: String
-    instagram: String
-    threads: String
-    userInputId: Int!
-    userInput: UserInput
-    createdAt: String!
-    schedule: [Schedule]!
-  }
-
-  type Schedule {
-    id: Int!
-    blog: String
-    twitter: String
-    facebook: String
-    linkedin: String
-    instagram: String
-    threads: String
-    contentId: Int!
-    content: Content
-    createdAt: String!
-  }
-`;
+export default schema;
