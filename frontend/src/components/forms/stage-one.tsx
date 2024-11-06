@@ -79,7 +79,7 @@ export default function StagOneForm() {
       .then((response: any) => {
         console.log({ response });
         toast.success("Your inputs are processed successfully");
-        router.push(`/${response.id}`);
+        router.push(`/${response?.data.createUserInput?.id}`);
       })
       .catch((error) => {
         console.error(error);

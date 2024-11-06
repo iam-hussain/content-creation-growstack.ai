@@ -3,7 +3,7 @@ import env from '@/providers/env-config';
 import apiClient from './api-client';
 
 export const extractChoice = (response: any) => {
-  console.log(JSON.stringify(response));
+  // console.log(JSON.stringify(response));
   return response?.data?.choices[0]?.message?.content?.trim() || '';
 };
 

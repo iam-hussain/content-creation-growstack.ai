@@ -10,8 +10,14 @@ export default function Content({ params }: any) {
         variables: { userInputId: Number(params?.id || 0) },
     });
 
-    if (error || subData?.message === "error")
-        return <p>Error: {error?.message || "Something went wrong...."}</p>;
+    if (error || subData?.statusUpdater?.message === "error")
+        return (
+            <div className="h-full w-full flex justify-center align-middle items-center py-10">
+                <h1 className="test-2xl">
+                    Error: {error?.message || "Something went wrong...."}
+                </h1>
+            </div>
+        );
 
     const { blog, twitter, linkedin, facebook, instagram, threads } =
         data?.contentByUserInput[0] || {};
